@@ -1,0 +1,144 @@
+[user]
+	name = Eryoneta
+	email = eryoneta@gmail.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main
+[alias]
+
+	# Lista resumida e formatada
+	#    Aceita argumentos: '--all'
+	loglist = log \
+		--graph \
+		--abbrev-commit \
+		--decorate \
+		--format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset) %C(yellow)- %an%C(reset)'
+	
+	# Commit rápido e simples
+	#    Recebe inputs em qualquer ordem
+	#    "Titulo" e "Mensagem" devem ter parenteses
+	#    '--skip-add' e '-s' pulam o 'git add -A'. Opcional
+	#    '--amend' e '-a' executam 'git commit' com '--amend'. Opcional
+	#        Se usado, o 'push' usa '--force'
+	#    '--reamend' e '-r' executam 'git commit' com '--amend --no-edit'. Opcional
+	#        Se usado, o 'push' usa '--force'
+	#    '--push' e '-p' executam 'git push' junto. Opcional
+	#    Ex.: 'git save --amend --push "Titulo" "Mensagem"'
+	#    Ex.: 'git save "Titulo" -as "Mensagem" -p'
+	#    Ex.: 'git save "Titulo" -pa "Mensagem"'
+	#    Ex.: 'git save -rps'
+	save = "!f() { \
+		local skip_add; \
+		local amend; \
+		local reamend; \
+		local push; \
+		local titulo; \
+		local mensagem; \
+		for command in \"$@\"; do \
+			case $command in \
+				'--skip-add') \
+					let \"skip_add = true\"; \
+					;; \
+				'--amend') \
+					let \"amend = true\"; \
+					;; \
+				'--reamend') \
+					let \"reamend = true\"; \
+					;; \
+				'--push') \
+					let \"push = true\"; \
+					;; \
+				*) \
+					if [[ ${command:0:1} == '-' && ${command:1:1} != '-' ]]; then \
+						for (( i=1; i<${#command}; i++ )); do \
+							case ${command:$i:1} in \
+								's') \
+									let \"skip_add = true\"; \
+									;; \
+								'a') \
+									let \"amend = true\"; \
+									;; \
+								'r') \
+									let \"reamend = true\"; \
+									;; \
+								'p') \
+									let \"push = true\"; \
+									;; \
+							esac; \
+						done; \
+					elif [[ -z $titulo ]]; then \
+						printf -v titulo %s \"$command\"; \
+					elif [[ -z $mensagem ]]; then \
+						printf -v mensagem %s \"$command\"; \
+					fi; \
+					;; \
+			esac; \
+		done; \
+		\
+		if [[ -z $skip_add ]]; then \
+			if [[ -n $titulo || -n $reamend ]]; then \
+				echo \">> git add -A\"; \
+				git add -A; \
+				echo \"\"; \
+			fi; \
+		fi; \
+		\
+		if [[ -n $reamend ]]; then \
+			echo \">> git commit --amend --no-edit\"; \
+			git commit --amend --no-edit; \
+			echo \"\"; \
+		elif [[ -n $amend && -n $titulo ]]; then \
+			if [[ -n $mensagem ]] ; then \
+				echo \">> git commit --amend -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
+				git commit --amend -m \"$titulo\" -m \"$mensagem\"; \
+				echo \"\"; \
+			else \
+				echo \">> git commit --amend -m \\\"titulo\\\"\"; \
+				git commit --amend -m \"$titulo\"; \
+				echo \"\"; \
+			fi; \
+		elif [[ -n $titulo ]]; then \
+			if [[ -n $mensagem ]] ; then \
+				echo \">> git commit -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
+				git commit -m \"$titulo\" -m \"$mensagem\"; \
+				echo \"\"; \
+			else \
+				echo \">> git commit -m \\\"titulo\\\"\"; \
+				git commit -m \"$titulo\"; \
+				echo \"\"; \
+			fi; \
+		fi; \
+		\
+		if [[ -n $push ]]; then \
+			if [[ -n $amend || -n $reamend ]]; then \
+				echo \">> git push -f\"; \
+				git push -f; \
+				echo \"\"; \
+			else \
+				echo \">> git push\"; \
+				git push; \
+				echo \"\"; \
+			fi; \
+		fi; \
+		\
+		echo \">> git log -1\"; \
+		git log -1;\
+		echo \"\"; \
+		\
+	}; \
+	f"
+	
+	# Commit rápido
+	#    Executa 'git save' com Titulo sendo a data atual
+	#    Formato da data: 'dd/mm/YYYY'
+	#    Aceita todos os argumentos que 'git save' aceita
+	#    Ex.: 'git quicksave --amend --push "Mensagem"'
+	quicksave = "!f() { \
+		printf -v titulo '%(%d/%m/%Y)T' -1; \
+		git save \"$titulo\" \"$@\"; \
+	}; \
+	f"
