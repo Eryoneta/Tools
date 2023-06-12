@@ -1,6 +1,3 @@
-[user]
-	name = Eryoneta
-	email = eryoneta@gmail.com
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -9,7 +6,6 @@
 [init]
 	defaultBranch = main
 [alias]
-
 	# Lista resumida e formatada
 	#    Aceita argumentos: '--all'
 	loglist = log \
@@ -41,32 +37,32 @@
 		for command in \"$@\"; do \
 			case $command in \
 				'--skip-add') \
-					let \"skip_add = true\"; \
+					skip_add=true; \
 					;; \
 				'--amend') \
-					let \"amend = true\"; \
+					amend=true; \
 					;; \
 				'--reamend') \
-					let \"reamend = true\"; \
+					reamend=true; \
 					;; \
 				'--push') \
-					let \"push = true\"; \
+					push=true; \
 					;; \
 				*) \
 					if [[ ${command:0:1} == '-' && ${command:1:1} != '-' ]]; then \
 						for (( i=1; i<${#command}; i++ )); do \
 							case ${command:$i:1} in \
 								's') \
-									let \"skip_add = true\"; \
+									skip_add=true; \
 									;; \
 								'a') \
-									let \"amend = true\"; \
+									amend=true; \
 									;; \
 								'r') \
-									let \"reamend = true\"; \
+									reamend=true; \
 									;; \
 								'p') \
-									let \"push = true\"; \
+									push=true; \
 									;; \
 							esac; \
 						done; \
@@ -78,6 +74,10 @@
 					;; \
 			esac; \
 		done; \
+		if [[ -n $reamend && -n $titulo ]]; then \
+			unset reamend; \
+			amend=true; \
+		fi; \
 		\
 		if [[ -z $skip_add ]]; then \
 			if [[ -n $titulo || -n $reamend ]]; then \
@@ -91,43 +91,53 @@
 			echo \">> git commit --amend --no-edit\"; \
 			git commit --amend --no-edit; \
 			echo \"\"; \
-		elif [[ -n $amend && -n $titulo ]]; then \
-			if [[ -n $mensagem ]] ; then \
-				echo \">> git commit --amend -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
-				git commit --amend -m \"$titulo\" -m \"$mensagem\"; \
-				echo \"\"; \
-			else \
-				echo \">> git commit --amend -m \\\"titulo\\\"\"; \
-				git commit --amend -m \"$titulo\"; \
-				echo \"\"; \
+		elif [[ -n $amend ]]; then \
+			if [[ -n $titulo ]]; then \
+				if [[ -n $mensagem ]]; then \
+					echo \">> git commit --amend -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
+					git commit --amend -m \"$titulo\" -m \"$mensagem\"; \
+					echo \"\"; \
+				else \
+					echo \">> git commit --amend -m \\\"titulo\\\"\"; \
+					git commit --amend -m \"$titulo\"; \
+					echo \"\"; \
+				fi; \
 			fi; \
-		elif [[ -n $titulo ]]; then \
-			if [[ -n $mensagem ]] ; then \
-				echo \">> git commit -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
-				git commit -m \"$titulo\" -m \"$mensagem\"; \
-				echo \"\"; \
-			else \
-				echo \">> git commit -m \\\"titulo\\\"\"; \
-				git commit -m \"$titulo\"; \
-				echo \"\"; \
+		else \
+			if [[ -n $titulo ]]; then \
+				if [[ -n $mensagem ]]; then \
+					echo \">> git commit -m \\\"titulo\\\" -m \\\"mensagem\\\"\"; \
+					git commit -m \"$titulo\" -m \"$mensagem\"; \
+					echo \"\"; \
+				else \
+					echo \">> git commit -m \\\"titulo\\\"\"; \
+					git commit -m \"$titulo\"; \
+					echo \"\"; \
+				fi; \
 			fi; \
 		fi; \
 		\
 		if [[ -n $push ]]; then \
-			if [[ -n $amend || -n $reamend ]]; then \
-				echo \">> git push -f\"; \
-				git push -f; \
-				echo \"\"; \
-			else \
-				echo \">> git push\"; \
-				git push; \
-				echo \"\"; \
+			if [[ -n $titulo || -n $reamend ]]; then \
+				if [[ -n $amend || -n $reamend ]]; then \
+					echo \">> git push -f\"; \
+					git push -f; \
+					echo \"\"; \
+				else \
+					echo \">> git push\"; \
+					git push; \
+					echo \"\"; \
+				fi; \
 			fi; \
 		fi; \
 		\
-		echo \">> git log -1\"; \
-		git log -1;\
-		echo \"\"; \
+		if [[ -n $titulo || -n $reamend ]]; then \
+			echo \">> git log -1\"; \
+			git log -1; \
+			echo \"\"; \
+		else \
+			echo \"fatal: no commit message provided!\"; \
+		fi; \
 		\
 	}; \
 	f"
