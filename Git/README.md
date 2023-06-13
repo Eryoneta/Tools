@@ -1,9 +1,9 @@
 # Git
 
-Shortcuts for Git commands.
+Shortcuts for _Git_ commands.
 
 ## `git loglist`
-Returns a simple, compact list of all commits. It is a simple _git alias_.
+Returns a simple, compact list of all commits. It's a simple _git alias_.
 
 ## `git save`
 Allows to execute `git add -A`, `git commit`, `git push`, and `git log -1`, all at once.
@@ -14,10 +14,10 @@ Allows to execute `git add -A`, `git commit`, `git push`, and `git log -1`, all 
       - The default is to not skip.
     - `--amend` or `-a`:
       - Apply `--amend` on the `commit`.
-      - If `--push` is also used, then it receives `-f`.
+      - If `--push` is also used, then it also applies `-f`.
     - `--reamend` or `r`:
       - Apply `--amend --no-edit` on the `commit`.
-      - If `--push` is also used, then it receives `-f`.
+      - If `--push` is also used, then it also applies `-f`.
     - `--push` or `-p`:
       - Executes `git push`.
       - The default is to not execute.
@@ -30,8 +30,8 @@ Allows to execute `git add -A`, `git commit`, `git push`, and `git log -1`, all 
     - The order of the params doesn't matter.
     - If `--amend` is used with `--reamend`, then `--reamend` is applied.
     - If `--reamend` is used with `"title"`, then `--amend` is applied.
-    - The shorthands can be used together. Ex.: `-ap` applies `--amend` and `git push -f`.
-    - It is necessary to have a `"title"`, or an error is thrown. Except when used `--reamend`.
+    - The shorthands can be used together. Ex.: `-ap` applies both `--amend` and `--push`.
+    - It is necessary to have a `"title"`, or an error is thrown. Except when `--reamend` is used.
 - ### Examples:
   - `git save --amend --push "Titulo" "Mensagem"`.
   - `git save -sa "Titulo" "Mensagem" -p"`.
@@ -42,5 +42,5 @@ Allows to execute `git add -A`, `git commit`, `git push`, and `git log -1`, all 
 ## `git quicksave`
 Simply executes `git save` with the current date(_DD/MM/AAAA_) as `"title"`.
 
-## Instalation
+## Installation
 It's the file `C:\Users\USER\.gitconfig`, present if _Git_ is installed.
