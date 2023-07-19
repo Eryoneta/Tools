@@ -19,4 +19,4 @@ Within a _PowerShell_ console, run:
 ```
 It checks for the file pointed by `$Profile`. If not found, it creates a new `Microsoft.PowerShell_profile.ps1` file.
 
-Then, run `Echo $Profile` to find the location and replace its content.
+Run `Echo $Profile` to find the location and then manually replace its contents.
