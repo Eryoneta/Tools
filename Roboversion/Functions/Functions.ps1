@@ -34,7 +34,7 @@ Function PrintText($text) {
 }
 
 # Retorna um fileMap de arquivos modificados no $destPath
-Function GetModifiedFilesMap($destPath, $threads) {
+Function GetModifiedFilesMap($destPath) {
 	# Path do arquivo com a lista de arquivos versionados e removidos em $destPath
 	$modifiedFilesList_FilePath = (Join-Path -Path $destPath -ChildPath "MODIFIED");
 	# Lista os arquivos versionados e removidos em MODIFIED
@@ -44,16 +44,19 @@ Function GetModifiedFilesMap($destPath, $threads) {
 	$Null = (Robocopy $destPath null `
 		$wildcardOfVersionedFile `
 		$wildcardOfRemovedFile `
-		/S /SJ /SL /R:1 /W:0 /MT:$threads /L /NJH /NJS /FP /NC /NS /NP /NDL /UNILOG:$modifiedFilesList_FilePath);
+		/S /SJ /SL /R:1 /W:0 /L /NJH /NJS /FP /NC /NS /NP /NDL /UNILOG:$modifiedFilesList_FilePath);
 	$modifiedFilesList_File = "";
 	If(Test-Path -LiteralPath $modifiedFilesList_FilePath -PathType "Leaf") {
 		# Carrega MODIFIED e o deleta
 		$modifiedFilesList_File = (Get-Content $modifiedFilesList_FilePath);
 		$Null = (Remove-Item $modifiedFilesList_FilePath);
 	}
-	# $removedFoldersPathList = (( # É incapaz de lidar com path>260, resultando em erro em loop
-	# 	Get-ChildItem -LiteralPath $destPath -Filter $wildcardOfRemovedFolder -Recurse -Directory -Force -ErrorAction SilentlyContinue
-	# ) | ForEach {"$($_.FullName)"});
+	# É incapaz de lidar com path>260, resultando em erro em loop
+	## $removedFoldersPathList = ((
+	## 	Get-ChildItem -LiteralPath $destPath -Filter $wildcardOfRemovedFolder -Recurse -Directory -Force -ErrorAction SilentlyContinue
+	## ) | ForEach {"$($_.FullName)"});
+	# Solução: Usar Robocopy para listar TODAS as pastas(Não aceita filtro de pastas-removidas...) e filtrar pelas removidas. Lento, mas funciona...!
+	#
 	# Lista as pastas em MODIFIED
 	#   Sem destino
 	#   Considerar apenas pastas
@@ -89,14 +92,14 @@ Function GetModifiedFilesMap($destPath, $threads) {
 }
 
 # Retorna uma lista de arquivos que serão modificados no $destPath para refletir $origPath
-Function GetWillModifyFilesMap($origPath, $destPath, $threads) {
+Function GetWillModifyFilesMap($origPath, $destPath) {
 	# Path do arquivo com a lista de arquivos a serem versionados ou removidos em $destPath
 	$willModifyFilesList_FilePath = (Join-Path -Path $destPath -ChildPath "WILL_MODIFY");
 	# Lista os arquivos a serem versionados e removidos em WILL_MODIFY
 	#   /MIR = Espelhar
 	#   /XF = Ignorar arquivos(Os versionados, os removidos, os versionados e removidos)
 	#   /XD = Ignorar pastas(Os removidos)
-	$Null = (Robocopy $origPath $destPath /MIR /SJ /SL /R:1 /W:0 /MT:$threads `
+	$Null = (Robocopy $origPath $destPath /MIR /SJ /SL /R:1 /W:0 `
 		/XF `
 			$wildcardOfVersionedFile `
 			$wildcardOfRemovedFile `
