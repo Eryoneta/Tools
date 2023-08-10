@@ -86,7 +86,7 @@
 		fi; \
 		\
 		if [[ -z $skip_add ]]; then \
-			if [[ -n $titulo || -n $reamend ]]; then \
+			if [[ -n $titulo || -n $amend || -n $reamend ]]; then \
 				echo \">> git add -A\"; \
 				git add -A; \
 				echo \"\"; \
@@ -108,6 +108,10 @@
 					git commit --amend -m \"$titulo\"; \
 					echo \"\"; \
 				fi; \
+			else \
+				echo \">> git commit --amend\"; \
+				git commit --amend; \
+				echo \"\"; \
 			fi; \
 		else \
 			if [[ -n $titulo ]]; then \
@@ -137,7 +141,7 @@
 			fi; \
 		fi; \
 		\
-		if [[ -n $titulo || -n $reamend ]]; then \
+		if [[ -n $titulo || -n $amend || -n $reamend ]]; then \
 			echo \">> git log -1\"; \
 			git log -1; \
 			echo \"\"; \
