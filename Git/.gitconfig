@@ -128,7 +128,7 @@
 		fi; \
 		\
 		if [[ -n $push ]]; then \
-			if [[ -n $titulo || -n $reamend ]]; then \
+			if [[ -n $titulo || -n $amend || -n $reamend ]]; then \
 				if [[ -n $amend || -n $reamend ]]; then \
 					echo \">> git push -f\"; \
 					git push -f; \
