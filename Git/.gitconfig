@@ -3,8 +3,10 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 [init]
 	defaultBranch = main
+
 [alias]
 	# Lista resumida e formatada
 	#    Aceita argumentos: '--all'
@@ -13,6 +15,10 @@
 		--abbrev-commit \
 		--decorate \
 		--format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset) %C(yellow)- %an%C(reset)'
+
+	# Atalho para trocar de branch
+	#    Aceita argumentos: '-b'
+	work = checkout
 	
 	# Commit rápido e simples
 	#    Recebe inputs em qualquer ordem
@@ -80,7 +86,7 @@
 		fi; \
 		\
 		if [[ -z $skip_add ]]; then \
-			if [[ -n $titulo || -n $reamend ]]; then \
+			if [[ -n $titulo || -n $amend || -n $reamend ]]; then \
 				echo \">> git add -A\"; \
 				git add -A; \
 				echo \"\"; \
@@ -102,6 +108,10 @@
 					git commit --amend -m \"$titulo\"; \
 					echo \"\"; \
 				fi; \
+			else \
+				echo \">> git commit --amend\"; \
+				git commit --amend; \
+				echo \"\"; \
 			fi; \
 		else \
 			if [[ -n $titulo ]]; then \
@@ -131,7 +141,7 @@
 			fi; \
 		fi; \
 		\
-		if [[ -n $titulo || -n $reamend ]]; then \
+		if [[ -n $titulo || -n $amend || -n $reamend ]]; then \
 			echo \">> git log -1\"; \
 			git log -1; \
 			echo \"\"; \
