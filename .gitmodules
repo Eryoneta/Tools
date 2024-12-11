@@ -4,3 +4,6 @@
 [submodule "powershell-prompt"]
 	path = powershell-prompt
 	url = https://Eryoneta@github.com/Eryoneta/powershell-prompt.git
+[submodule "git-tools"]
+	path = git-tools
+	url = https://Eryoneta@github.com/Eryoneta/git-tools.git
