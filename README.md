@@ -6,9 +6,9 @@ A series of tools I use to help me develop.
 [Various Useful bookmarks](./Bookmarklets#bookmarklets)
 
 ## Git
-[Git Advanced Shortcuts](./Git#git)
+[Git Tools](https://github.com/Eryoneta/git-tools#git-tools)
 
 ## PowerShell
-[Windows PowerShell Custom Profile](./Windows%20PowerShell#windows-powershell)
+[Custom Prompt](https://github.com/Eryoneta/powershell-prompt#windows-powershell)
 
 [RoboVersion](https://github.com/Eryoneta/Roboversion#roboversion)
