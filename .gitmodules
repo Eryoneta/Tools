@@ -1,3 +1,6 @@
 [submodule "Roboversion"]
 	path = Roboversion
 	url = https://Eryoneta@github.com/Eryoneta/Roboversion.git
+[submodule "powershell-prompt"]
+	path = powershell-prompt
+	url = https://Eryoneta@github.com/Eryoneta/powershell-prompt.git
